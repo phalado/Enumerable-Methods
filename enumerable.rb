@@ -48,7 +48,7 @@ module Enumerable
     elsif pat
       my_each { |x| answer = true if pattern?(x, pat) }
     else
-      my_each { |x| answer = true unless x }
+      my_each { |x| answer = true if x }
     end
     answer
   end
@@ -91,11 +91,12 @@ module Enumerable
 
   def my_inject(*args)
     answer, sym = inj_param(*args)
-    answer = yield(0, 1).zero? ? 1 : 0
+    arr = answer ? to_a : to_a[1..-1]
+    answer ||= to_a[0]
     if block_given?
-      my_each { |x| answer = yield(answer, x) }
-    elsif arg
-      my_each { |x| answer = answer.public_send(sym, x) }
+      arr.my_each { |x| answer = yield(answer, x) }
+    elsif sym
+      arr.my_each { |x| answer = answer.public_send(sym, x) }
     end
     answer
   end
